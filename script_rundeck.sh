@@ -1,10 +1,6 @@
 #!/bin/bash
 
-echo envvar=$RD_OPTION_GITTEST
-echo args=$1
-echo message=@option.gittest@
-
-echo ${option.gittest}
+echo @option.gittest@
 
 echo $1
 date=$(date +"%A %d %B")

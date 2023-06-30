@@ -1,7 +1,12 @@
 #!/bin/bash
 
 echo "value: @option.gittest@"
-echo $1
+echo $RD_OPTION_GITTEST
+echo ${option.gittest}
+@option.gittest@
+
+
+
 date=$(date +"%A %d %B")
 version=$(cat /etc/os-release | grep -i version)
 

@@ -10,4 +10,7 @@ echo "time is: $date"
 echo -e "i'm running: \n"
 echo "$version"
 echo "Last test.....Test"
+echo envvar=$RD_OPTION_GITTEST
+echo args=$1
 echo message=@option.gittest@
+

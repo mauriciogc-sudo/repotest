@@ -1,10 +1,11 @@
 #!/bin/bash
 
-echo "value: @option.gittest@"
+#echo "value: @option.gittest@"
+#echo $RD_OPTION_GITTEST
+#echo ${option.gittest}
+#@option.gittest@
+export RD_OPTION_GITTEST
 echo $RD_OPTION_GITTEST
-echo ${option.gittest}
-@option.gittest@
-
 
 
 date=$(date +"%A %d %B")

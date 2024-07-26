@@ -1,0 +1,24 @@
+<joblist>
+  <job>
+    <defaultTab>nodes</defaultTab>
+    <description></description>
+    <executionEnabled>true</executionEnabled>
+    <id>43b95243-ab03-48c3-a2e4-a24d7172fd94</id>
+    <loglevel>INFO</loglevel>
+    <name>scm2</name>
+    <nodeFilterEditable>false</nodeFilterEditable>
+    <plugins />
+    <runnerSelector>
+      <runnerFilterMode>LOCAL</runnerFilterMode>
+      <runnerFilterType>LOCAL_RUNNER</runnerFilterType>
+    </runnerSelector>
+    <scheduleEnabled>true</scheduleEnabled>
+    <schedules />
+    <sequence keepgoing='false' strategy='node-first'>
+      <command>
+        <exec>hostname;date</exec>
+      </command>
+    </sequence>
+    <uuid>43b95243-ab03-48c3-a2e4-a24d7172fd94</uuid>
+  </job>
+</joblist>

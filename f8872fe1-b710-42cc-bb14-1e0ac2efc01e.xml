@@ -1,0 +1,44 @@
+<joblist>
+  <job>
+    <defaultTab>nodes</defaultTab>
+    <description></description>
+    <dispatch>
+      <excludePrecedence>true</excludePrecedence>
+      <keepgoing>false</keepgoing>
+      <rankOrder>ascending</rankOrder>
+      <successOnEmptyNodeFilter>false</successOnEmptyNodeFilter>
+      <threadcount>1</threadcount>
+    </dispatch>
+    <executionEnabled>true</executionEnabled>
+    <id>f8872fe1-b710-42cc-bb14-1e0ac2efc01e</id>
+    <loglevel>INFO</loglevel>
+    <name>ansiblehun</name>
+    <nodeFilterEditable>true</nodeFilterEditable>
+    <nodefilters>
+      <filter>.*</filter>
+    </nodefilters>
+    <nodesSelectedByDefault>true</nodesSelectedByDefault>
+    <plugins />
+    <retry>2</retry>
+    <runnerSelector>
+      <canChange>true</canChange>
+      <filter>CURL</filter>
+      <runnerFilterMode>TAGS</runnerFilterMode>
+      <runnerFilterType>TAG_FILTER_AND</runnerFilterType>
+    </runnerSelector>
+    <scheduleEnabled>true</scheduleEnabled>
+    <schedules />
+    <sequence keepgoing='false' strategy='node-first'>
+      <command>
+        <exec>date</exec>
+      </command>
+      <command>
+        <exec>hostname</exec>
+      </command>
+      <command>
+        <exec>sleep 10</exec>
+      </command>
+    </sequence>
+    <uuid>f8872fe1-b710-42cc-bb14-1e0ac2efc01e</uuid>
+  </job>
+</joblist>

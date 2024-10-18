@@ -36,7 +36,7 @@
         <exec>hostname</exec>
       </command>
       <command>
-        <exec>sleep 10</exec>
+        <exec>sleep 200</exec>
       </command>
     </sequence>
     <uuid>f8872fe1-b710-42cc-bb14-1e0ac2efc01e</uuid>

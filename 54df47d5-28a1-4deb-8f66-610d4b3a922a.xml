@@ -1,0 +1,250 @@
+<joblist>
+  <job>
+    <defaultTab>nodes</defaultTab>
+    <description></description>
+    <executionEnabled>true</executionEnabled>
+    <id>54df47d5-28a1-4deb-8f66-610d4b3a922a</id>
+    <loglevel>INFO</loglevel>
+    <name>os version</name>
+    <nodeFilterEditable>false</nodeFilterEditable>
+    <plugins />
+    <runnerSelector>
+      <filter>MGC-MACOS</filter>
+      <runnerFilterMode>TAGS</runnerFilterMode>
+      <runnerFilterType>TAG_FILTER_AND</runnerFilterType>
+    </runnerSelector>
+    <scheduleEnabled>true</scheduleEnabled>
+    <schedules />
+    <sequence keepgoing='true' strategy='node-first'>
+      <command>
+        <exec>cat /etc/os-release;date;hostname</exec>
+      </command>
+      <command>
+        <exec>sleep 100</exec>
+      </command>
+      <command>
+        <fileExtension>py</fileExtension>
+        <script><![CDATA[import psutil
+
+def get_ram_info():
+    ram = psutil.virtual_memory()
+
+    total_ram = ram.total      # Total installed RAM
+    available_ram = ram.available  # RAM available for processes
+    used_ram = ram.used        # RAM used by processes
+    free_ram = ram.free        # RAM not being used
+    percent_used = ram.percent # Percentage of RAM used
+
+    return total_ram, available_ram, used_ram, free_ram, percent_used
+
+if __name__ == "__main__":
+    total, available, used, free, percent = get_ram_info()
+
+    print(f"Total RAM: {total} bytes")
+    print(f"Available RAM: {available} bytes")
+    print(f"Used RAM: {used} bytes")
+    print(f"Free RAM: {free} bytes")
+    print(f"Percentage of RAM used: {percent}%")]]></script>
+        <scriptargs />
+        <scriptinterpreter>python</scriptinterpreter>
+      </command>
+      <command>
+        <fileExtension>py</fileExtension>
+        <script><![CDATA[import os
+import sys
+import boto3
+import botocore
+
+# --- CONFIGURATION & RUNDECK VARIABLES ---
+JOB_NAME      = "@option.job_name@".strip()
+TEAM          = "@option.team@".strip()
+FILE_NAME     = "@option.FileName@".strip()
+EXEC_ID       = "@job.execid@".strip()
+
+BUCKET        = "@option.S3_BUKCET@".strip()
+ROLE_ARN      = "@option.S3_ROLE_ARN@".strip()
+EXTERNAL_ID   = "@option.S3_ROLE_EXT_ID@".strip()
+
+# Derived Paths
+# S3 Key: team/job_name/filename
+S3_KEY = f"{TEAM}/{JOB_NAME}/{FILE_NAME}"
+
+# Local Path: matches the path used in your processing scripts
+LOCAL_FILENAME = f"/app/runner/tmp/{JOB_NAME}/{EXEC_ID}/{FILE_NAME}"
+
+# Ensure local directory exists
+os.makedirs(os.path.dirname(LOCAL_FILENAME), exist_ok=True)
+
+
+def assume_role(role_arn, external_id, session_name="rundeck-assumed-role"):
+    """
+    Assumes the given IAM role using an External ID and returns a boto3 Session.
+    """
+    try:
+        sts_client = boto3.client("sts")
+        response = sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName=session_name,
+            ExternalId=external_id
+        )]]></script>
+        <scriptargs />
+        <scriptinterpreter>python</scriptinterpreter>
+      </command>
+      <command>
+        <fileExtension>.py</fileExtension>
+        <script><![CDATA[import sys
+import pandas as pd
+import pathlib
+
+# Note: In a real environment, replace these placeholders with actual values
+# for testing, or leave them as is if your runner handles the substitution.
+job_name = "@option.job_name@"
+exec_id = "@job.execid@"
+team = "@option.team@"
+
+def log_to_backup(item_id):
+    """Appends an item ID to the backup_items file."""
+    # Build the directory path
+    base_dir = pathlib.Path(f"/app/runner/tmp/{job_name}/{exec_id}/")
+
+    # Ensure the directory exists (parents=True builds the whole tree)
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    file_path = base_dir / "backup_items"
+
+    with open(file_path, "a") as f:
+        f.write(f"{item_id}\n")
+
+def get_ids_to_process():
+    """Extracts IDs from file or manual option."""
+    file_name = "@option.FileName@".strip()
+    manual_id = "@option.one_item@".strip()
+
+    if file_name and not file_name.startswith("@option"):
+        file_path = f"/app/runner/tmp/{job_name}/{exec_id}/{file_name}"
+        print(f" Bulk Mode: {file_name}")
+
+        df = pd.read_csv(file_path) if file_path.endswith('.csv') else pd.read_excel(file_path)
+        df.columns = [c.strip().lower() for c in df.columns]
+
+        if 'item' not in df.columns:
+            raise KeyError(f"Column 'item' not found in {file_name}")
+
+        return df['item'].dropna().astype(str).unique().tolist()
+
+    if manual_id and not manual_id.startswith("@option"):
+        print(f" Manual Mode: {manual_id}")
+        return [manual_id]
+
+    raise ValueError("No input provided (FileName or item).")
+
+def main():
+    try:
+        ids = get_ids_to_process()
+
+        for item_id in ids:
+            print(f" Processing ID: {item_id}")
+
+            # --- Logging to the backup file ---
+            log_to_backup(item_id)
+
+        print(f"\n All IDs logged to backup_items in /app/runner/tmp/{job_name}/{exec_id}/")
+
+    except Exception as e:
+        print(f" FATAL ERROR: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()]]></script>
+        <scriptargs />
+        <scriptinterpreter>python</scriptinterpreter>
+      </command>
+      <command>
+        <description>last one</description>
+        <fileExtension>.py</fileExtension>
+        <script><![CDATA[import sys
+import pandas as pd
+import pathlib
+    """Checks if the source file actually exists on S3 before moving"""
+    try:
+        s3_client.head_object(Bucket=bucket, Key=key)
+        return True
+    except:
+        return False
+
+def move_s3_file(session, bucket, src, dest):
+    """Moves processed file to archive folder on S3"""
+    s3 = session.client('s3')
+    if not s3_file_exists(s3, bucket, src):
+        print(f"ℹ️  Source file {src} not found on S3. Skipping move (likely Manual Mode).")
+        return False
+
+    try:
+        s3.copy({'Bucket': bucket, 'Key': src}, bucket, dest)
+        s3.delete_object(Bucket=bucket, Key=src)
+        print(f"📦 Archived processed file to: {dest}")
+        return True
+    except Exception as e:
+        print(f"❌ S3 Move failed: {e}")
+        return False
+
+def upload_backup(session, local_zip, bucket):
+    """Uploads the zipped local logs/backups to S3"""
+    s3 = session.client('s3')
+    obj_name = f"{ROOT_KEY}/backups/{os.path.basename(local_zip)}"
+    try:
+        s3.upload_file(local_zip, bucket, obj_name)
+        print(f"✅ Uploaded backup to: s3://{bucket}/{obj_name}")
+        return True
+    except Exception as e:
+        print(f"❌ Backup upload failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    print(f"🚀 Starting Cleanup Task for Job: {JOB_NAME}...")
+
+    aws_session = assume_role(ROLE_ARN, EXTERNAL_ID)
+
+    # 1. Handle Local Backups/Zipping
+    zip_path = zip_folder(LOCAL_PATH)
+    if zip_path:
+        upload_backup(aws_session, zip_path, BUCKET)
+        # Remove the temporary zip file after upload
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+
+    # 2. Handle S3 Processed File Move
+    # Only attempt if FILE_NAME was provided (Bulk Mode)
+    if FILE_NAME and not FILE_NAME.startswith("@option"):
+        move_s3_file(aws_session, BUCKET, S3_SOURCE_KEY, S3_DEST_KEY)
+    else:
+        print("ℹ️  Manual Mode: No processed S3 file to move.")
+
+    # 3. Final Local Cleanup
+    if os.path.exists(LOCAL_PATH):
+        shutil.rmtree(LOCAL_PATH)
+        print(f"🧹 Local filesystem cleaned: {LOCAL_PATH}")
+
+    print("✅ Cleanup and archiving complete.")]]></script>
+        <scriptargs />
+        <scriptinterpreter>python</scriptinterpreter>
+      </command>
+      <pluginConfig>
+        <WorkflowStrategy>
+          <node-first>
+            <info><![CDATA[<table>
+    <tr><td>1.</td><td class="text-info">NodeA</td> <td>step 1</td></tr>
+    <tr><td>2.</td><td class="text-info">"</td> <td>step 2</td></tr>
+    <tr><td>3.</td><td class="text-info">"</td> <td>step 3</td></tr>
+    <tr><td>4.</td><td class="text-muted">NodeB</td> <td>step 1</td></tr>
+    <tr><td>5.</td><td class="text-muted">"</td> <td>step 2</td></tr>
+    <tr><td>6.</td><td class="text-muted">"</td> <td>step 3</td></tr>
+</table>]]></info>
+          </node-first>
+        </WorkflowStrategy>
+      </pluginConfig>
+    </sequence>
+    <user>mauricio</user>
+    <uuid>54df47d5-28a1-4deb-8f66-610d4b3a922a</uuid>
+  </job>
+</joblist>

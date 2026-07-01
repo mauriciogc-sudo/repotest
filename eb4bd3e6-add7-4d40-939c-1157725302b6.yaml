@@ -1,0 +1,34 @@
+- defaultTab: nodes
+  description: ''
+  executionEnabled: true
+  id: eb4bd3e6-add7-4d40-939c-1157725302b6
+  loglevel: INFO
+  name: other reference
+  nodeFilterEditable: false
+  nodefilters:
+    dispatch:
+      excludePrecedence: true
+      keepgoing: false
+      rankOrder: ascending
+      successOnEmptyNodeFilter: false
+      threadcount: '1'
+    filter: 'name: virtualbox-test '
+  nodesSelectedByDefault: true
+  plugins:
+    ExecutionLifecycle: {}
+  runnerSelector:
+    filter: MGC-RUNNER
+    runnerFilterMode: TAGS
+    runnerFilterType: TAG_FILTER_AND
+  scheduleEnabled: true
+  schedules: []
+  sequence:
+    commands:
+    - exec: sleep 400
+    - exec: date
+    - exec: hostname
+    keepgoing: true
+    strategy: node-first
+  user: mauricio
+  uuid: eb4bd3e6-add7-4d40-939c-1157725302b6
+

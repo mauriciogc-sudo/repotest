@@ -1,0 +1,32 @@
+<joblist>
+  <job>
+    <defaultTab>nodes</defaultTab>
+    <description></description>
+    <executionEnabled>true</executionEnabled>
+    <id>abb85ba8-1203-42c0-ad81-045f8bc81224</id>
+    <loglevel>INFO</loglevel>
+    <name>runner10</name>
+    <nodeFilterEditable>false</nodeFilterEditable>
+    <plugins />
+    <runnerSelector>
+      <filter>NEWRUNNERMGC</filter>
+      <runnerFilterMode>TAGS</runnerFilterMode>
+      <runnerFilterType>TAG_FILTER_AND</runnerFilterType>
+    </runnerSelector>
+    <scheduleEnabled>true</scheduleEnabled>
+    <schedules />
+    <sequence keepgoing='false' strategy='node-first'>
+      <command>
+        <exec>hostname;date</exec>
+      </command>
+      <command>
+        <exec>sleep 20</exec>
+      </command>
+      <command>
+        <exec>df -h</exec>
+      </command>
+    </sequence>
+    <user>mauricio</user>
+    <uuid>abb85ba8-1203-42c0-ad81-045f8bc81224</uuid>
+  </job>
+</joblist>

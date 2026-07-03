@@ -1,0 +1,51 @@
+<joblist>
+  <job>
+    <defaultTab>nodes</defaultTab>
+    <description></description>
+    <dispatch>
+      <excludePrecedence>true</excludePrecedence>
+      <keepgoing>false</keepgoing>
+      <rankOrder>ascending</rankOrder>
+      <successOnEmptyNodeFilter>false</successOnEmptyNodeFilter>
+      <threadcount>1</threadcount>
+    </dispatch>
+    <executionEnabled>true</executionEnabled>
+    <id>a529dfe3-578f-4527-b3da-199450404fd4</id>
+    <loglevel>INFO</loglevel>
+    <name>runnersversion</name>
+    <nodeFilterEditable>false</nodeFilterEditable>
+    <nodefilters>
+      <filter></filter>
+    </nodefilters>
+    <nodesSelectedByDefault>true</nodesSelectedByDefault>
+    <plugins />
+    <runnerSelector>
+      <filter>MACOSNEW</filter>
+      <runnerFilterMode>TAGS</runnerFilterMode>
+      <runnerFilterType>TAG_FILTER_AND</runnerFilterType>
+    </runnerSelector>
+    <scheduleEnabled>true</scheduleEnabled>
+    <schedules />
+    <sequence keepgoing='false' strategy='node-first'>
+      <command>
+        <exec>hostname;date</exec>
+      </command>
+      <pluginConfig>
+        <WorkflowStrategy>
+          <node-first>
+            <info><![CDATA[<table>
+    <tr><td>1.</td><td class="text-info">NodeA</td> <td>step 1</td></tr>
+    <tr><td>2.</td><td class="text-info">"</td> <td>step 2</td></tr>
+    <tr><td>3.</td><td class="text-info">"</td> <td>step 3</td></tr>
+    <tr><td>4.</td><td class="text-muted">NodeB</td> <td>step 1</td></tr>
+    <tr><td>5.</td><td class="text-muted">"</td> <td>step 2</td></tr>
+    <tr><td>6.</td><td class="text-muted">"</td> <td>step 3</td></tr>
+</table>]]></info>
+          </node-first>
+        </WorkflowStrategy>
+      </pluginConfig>
+    </sequence>
+    <user>mauricio</user>
+    <uuid>a529dfe3-578f-4527-b3da-199450404fd4</uuid>
+  </job>
+</joblist>
